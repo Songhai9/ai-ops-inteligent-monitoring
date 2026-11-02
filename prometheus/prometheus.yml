@@ -1,37 +1,58 @@
-# Prometheus Configuration File
-# This file defines how Prometheus collects metrics from targets
+# Prometheus Configuration for AI-Powered Anomaly Detection Lab
+# Module 4: AIOps Foundations
 
-# Global configuration applies to all scrape jobs
 global:
-  # How often Prometheus scrapes targets (default: 1m)
+  # How frequently to scrape targets
   scrape_interval: 15s
 
-  # How often Prometheus evaluates alerting rules (used in Module 4)
+  # How frequently to evaluate alerting rules
   evaluation_interval: 15s
 
-  # Optional: Labels to add to all metrics before storing
-  # Useful for identifying which Prometheus server collected the data
+  # External labels to attach to all time series and alerts
   external_labels:
-    monitor: 'aiops-lab'
-    environment: 'learning'
+    monitor: "aiops-lab"
+    environment: "learning"
 
-# Scrape configuration - defines which targets to monitor
+# Scrape configurations
 scrape_configs:
-- job_name: 'prometheus'
-  static_configs:
-  - targets:
-    - 'prometheus:9090'
-- job_name: node-exporter
-  static_configs:
-  - targets:
-    - 'node-exporter:9100'
-  #
-  # Example jobs to add:
-  # 1. Prometheus self-monitoring (container name: prometheus, port 9090)
-  # 2. Node Exporter (container name: node-exporter, port 9100)
-  #
-  # Remember:
-  # - Use 2 spaces for indentation (no tabs!)
-  # - job_name becomes a label on all metrics
-  # - Use container names for targets: 'container-name:port' (no http://)
-  # - Multiple targets can be in the same job
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          service: "prometheus"
+          tier: "monitoring"
+
+  # Node Exporter - System metrics (CPU, memory, disk, network)
+  # This is the primary data source for ML anomaly detection in this lab
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          service: "node-exporter"
+          tier: "infrastructure"
+          instance_name: "lab-host"
+
+    # Scrape more frequently for better ML training data
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Grafana metrics (optional - for advanced monitoring)
+  - job_name: "grafana"
+    static_configs:
+      - targets: ["grafana:3000"]
+        labels:
+          service: "grafana"
+          tier: "monitoring"
+
+# Optional: Recording rules for pre-computed aggregations
+# These can speed up dashboard queries and provide consistent baselines
+# rule_files:
+#   - 'recording_rules.yml'
+
+# Optional: Alerting rules
+# In this lab, we'll use Grafana's ML-based alerting instead
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']

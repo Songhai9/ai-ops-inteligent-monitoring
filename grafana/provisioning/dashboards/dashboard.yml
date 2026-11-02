@@ -1,0 +1,25 @@
+# Grafana Dashboard Provisioning
+# Configures where Grafana looks for dashboard JSON files
+
+apiVersion: 1
+
+providers:
+  # Provider for JSON dashboard files
+  - name: "Default"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+
+  # Note: In this lab, students will create dashboards manually through the UI
+  # to learn the hands-on process. Pre-built dashboards can be added to the
+  # path above for reference or quick-start scenarios.
+  #
+  # To add a pre-built dashboard:
+  # 1. Export dashboard JSON from Grafana
+  # 2. Place in ./grafana/provisioning/dashboards/
+  # 3. Dashboard will auto-load on Grafana startup

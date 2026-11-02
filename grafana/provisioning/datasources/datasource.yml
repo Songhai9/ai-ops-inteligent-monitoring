@@ -1,0 +1,42 @@
+# Grafana Datasource Provisioning
+# Automatically configures Prometheus as the primary data source
+
+apiVersion: 1
+
+datasources:
+  # Prometheus - Primary time-series database
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    uid: prometheus
+
+    # Make this the default datasource
+    isDefault: true
+
+    # JSON data for additional configuration
+    jsonData:
+      # Query timeout
+      timeInterval: 15s
+
+      # HTTP method for queries
+      httpMethod: POST
+
+      # Enable exemplars (useful for tracing correlation)
+      exemplarTraceIdDestinations: []
+
+    # Make this datasource editable in the UI
+    editable: true
+
+    # Version number (increment if you update this file)
+    version: 1
+
+  # Note: If you want to add ML-specific datasources (like Sift),
+  # you can add them here. Example:
+  #
+  # - name: Sift
+  #   type: sift-datasource
+  #   access: proxy
+  #   url: http://sift-backend:8080
+  #   isDefault: false
+  #   editable: true
