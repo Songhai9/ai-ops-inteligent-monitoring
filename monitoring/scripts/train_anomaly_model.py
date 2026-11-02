@@ -5,9 +5,8 @@ Module 4: AIOps Foundations
 This script trains an IsolationForest model on CPU metrics from Prometheus.
 It learns what "normal" CPU behavior looks like and saves the model for later use.
 
-Usage: Activate venv first, then run:
-    source /root/monitoring/scripts/venv/bin/activate
-    python3 /root/monitoring/scripts/train_anomaly_model.py
+Usage: With your virtual environment activated, run from the project root:
+    python monitoring/scripts/train_anomaly_model.py
 """
 
 import os
@@ -15,6 +14,7 @@ import sys
 import pickle
 import warnings
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -26,7 +26,7 @@ warnings.filterwarnings('ignore')
 
 # Configuration
 PROMETHEUS_URL = "http://localhost:9090"
-MODEL_PATH = "/root/monitoring/anomaly_model.pkl"
+MODEL_PATH = str(Path(__file__).resolve().parents[1] / "anomaly_model.pkl")
 METRICS_QUERY = '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)'
 
 # Training parameters
@@ -243,8 +243,8 @@ def main():
         print("   ✓ Time-of-day patterns (hourly seasonality)")
 
         print("\n🚀 Next step:")
-        print("   Run detect_anomalies.py to detect anomalies in live data!")
-        print("   Example: python3 /root/monitoring/scripts/detect_anomalies.py")
+        print("   Run detect_anomaly.py to detect anomalies in live data!")
+        print("   Example: python monitoring/scripts/detect_anomaly.py")
 
         print("\n" + "="*70 + "\n")
 
@@ -253,7 +253,7 @@ def main():
     except Exception as e:
         print(f"\n❌ Error during training: {str(e)}")
         print("\nTroubleshooting:")
-        print("   1. Ensure Prometheus is running: docker-compose ps")
+        print("   1. Ensure Prometheus is running: docker compose ps")
         print("   2. Check Prometheus has data: curl http://localhost:9090/api/v1/query?query=up")
         print("   3. Verify Node Exporter is scraping: curl http://localhost:9100/metrics")
         return 1

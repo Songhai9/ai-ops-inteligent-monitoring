@@ -1,2 +1,6 @@
 .venv/
 .venv/**
+monitoring/anomaly_model.pkl
+__pycache__/
+*.py[cod]
+monitoring/forecasting_models/

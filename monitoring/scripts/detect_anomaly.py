@@ -5,9 +5,8 @@ Module 4: AIOps Foundations
 This script uses the trained IsolationForest model to detect anomalies
 in real-time CPU metrics from Prometheus.
 
-Usage: Activate venv first, then run:
-    source /root/monitoring/scripts/venv/bin/activate
-    python3 /root/monitoring/scripts/detect_anomalies.py
+Usage: With your virtual environment activated, run from the project root:
+    python monitoring/scripts/detect_anomaly.py
 """
 
 import os
@@ -16,6 +15,7 @@ import pickle
 import time
 import warnings
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -26,7 +26,7 @@ warnings.filterwarnings('ignore')
 
 # Configuration
 PROMETHEUS_URL = "http://localhost:9090"
-MODEL_PATH = "/root/monitoring/anomaly_model.pkl"
+MODEL_PATH = str(Path(__file__).resolve().parents[1] / "anomaly_model.pkl")
 METRICS_QUERY = '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)'
 
 # Detection parameters
@@ -341,14 +341,14 @@ def main():
         print(f"\n❌ Error: {str(e)}")
         print("\n🔧 Solution:")
         print("   Run the training script first:")
-        print("   python3 /root/monitoring/scripts/train_anomaly_model.py")
+        print("   python monitoring/scripts/train_anomaly_model.py")
         return 1
 
     except Exception as e:
         print(f"\n❌ Error during detection: {str(e)}")
         print("\nTroubleshooting:")
-        print("   1. Ensure Prometheus is running: docker-compose ps")
-        print("   2. Verify model exists: ls -l /root/monitoring/anomaly_model.pkl")
+        print("   1. Ensure Prometheus is running: docker compose ps")
+        print(f"   2. Verify model exists: {MODEL_PATH}")
         print("   3. Check Prometheus has data: curl http://localhost:9090/api/v1/query?query=up")
         return 1
 
